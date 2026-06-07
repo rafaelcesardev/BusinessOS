@@ -1,0 +1,14 @@
+{
+  "name": "businessos-marketplace",
+  "owner": {
+    "name": "rafaelcesardev",
+    "url": "https://github.com/rafaelcesardev"
+  },
+  "plugins": [
+    {
+      "name": "businessos",
+      "source": "./",
+      "description": "O sistema operacional do seu negócio dentro do Claude Code. Instala por cima de qualquer projeto."
+    }
+  ]
+}

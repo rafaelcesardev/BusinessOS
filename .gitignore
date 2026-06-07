@@ -1,0 +1,25 @@
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+
+# Claude Code (sessões locais)
+.claude/projects/
+.claude/sessions/
+.claude/shell-snapshots/
+.claude/telemetry/
+.claude/file-history/
+.claude/backups/
+
+# Dependências
+node_modules/
+
+# Cérebro do negócio gerado no projeto host (nunca versionar aqui)
+.businessos/
+
+# Arquivos temporários
+*.log
+*.tmp

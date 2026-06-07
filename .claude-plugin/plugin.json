@@ -1,0 +1,17 @@
+{
+  "name": "businessos",
+  "version": "1.0.0",
+  "description": "O sistema operacional do seu negócio dentro do Claude Code. Memória do negócio, identidade visual e comandos de marketing, SEO, ads e operação — instalável por cima de qualquer projeto.",
+  "author": {
+    "name": "rafaelcesardev"
+  },
+  "homepage": "https://github.com/rafaelcesardev/BusinessOS",
+  "keywords": [
+    "marketing",
+    "seo",
+    "ads",
+    "conteudo",
+    "negocio",
+    "business"
+  ]
+}

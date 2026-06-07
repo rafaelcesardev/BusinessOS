@@ -1,0 +1,16 @@
+{
+  "_comment": "OPCIONAL e INERTE por padrão. O BusinessOS carrega o contexto a cada comando (no setup do SKILL.md), então um hook não é necessário. Use isto SÓ se quiser o cérebro do negócio injetado no início de TODA sessão deste projeto. Copie o bloco 'hooks' para o .claude/settings.json do projeto host. Ajuste o caminho de context.mjs para o local real do plugin (rode 'claude plugin' para descobrir, ou use o caminho absoluto da instalação).",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"${CLAUDE_PLUGIN_ROOT}/skills/businessos/scripts/context.mjs\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
