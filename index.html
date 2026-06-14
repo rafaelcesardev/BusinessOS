@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BusinessOS — o sistema operacional do seu negócio dentro do Claude Code</title>
+<meta name="description" content="BusinessOS é um plugin do Claude Code que dá memória, identidade visual e 12 comandos de marketing, SEO, ads e operação para qualquer projeto. Documentação completa." />
+<meta name="color-scheme" content="dark" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="BusinessOS — o SO do seu negócio dentro do Claude Code" />
+<meta property="og:description" content="Memória do negócio, identidade aplicada em tudo e 12 comandos de marketing, SEO, ads e operação. Instalável por cima de qualquer projeto." />
+<meta property="og:url" content="https://github.com/rafaelcesardev/BusinessOS" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* ============================================================ TOKENS */
+:root{
+  --bg:        #0E1116;
+  --bg-2:      #12161D;
+  --surface:   #171C24;
+  --surface-2: #1D232C;
+  --ink:       #FAFAF7;
+  --ink-soft:  #D7D8D2;
+  --muted:     #9CA3AE;
+  --muted-2:   #6E7681;
+  --cream:     #F5ECD7;
+  --cream-ink: #1A1A1A;
+  --cream-body:#4A463C;
+  --accent:    #D2683F;   /* terracota — UMA cor de destaque */
+  --accent-hi: #E8825B;
+  --accent-deep:#B14E2A;
+
+  --line:      rgba(250,250,247,0.11);
+  --line-soft: rgba(250,250,247,0.06);
+  --line-cream:rgba(26,26,26,0.14);
+
+  --max: 1180px;
+  --gutter: clamp(1.25rem, 5vw, 4.5rem);
+
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --sans:  "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease: cubic-bezier(.16,1,.3,1);          /* ease-out-expo-ish */
+  --ease-q: cubic-bezier(.22,1,.36,1);
+
+  --z-sticky: 100;
+  --z-nav: 200;
+}
+
+/* ============================================================ RESET */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  font-size:clamp(1rem,0.96rem + 0.2vw,1.0625rem);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+/* grain overlay — atmosphere, not flat color */
+body::before{
+  content:"";position:fixed;inset:0;z-index:1;pointer-events:none;
+  opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body > *{position:relative;z-index:2}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:#fff}
+:focus-visible{outline:2px solid var(--accent-hi);outline-offset:3px;border-radius:3px}
+
+/* ============================================================ LAYOUT */
+.wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--gutter)}
+.section{padding-block:clamp(4.5rem,9vw,8rem)}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.78rem;font-weight:500;
+  letter-spacing:.26em;text-transform:uppercase;
+  color:var(--accent-hi);
+  display:inline-flex;align-items:center;gap:.7em;
+}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent)}
+
+h1,h2,h3,h4{font-family:var(--serif);font-weight:500;line-height:1.02;letter-spacing:-0.025em;text-wrap:balance}
+p{text-wrap:pretty}
+.lead{font-size:clamp(1.12rem,1rem + 0.7vw,1.4rem);line-height:1.55;color:var(--ink-soft);max-width:60ch}
+
+/* ============================================================ NAV */
+.nav{
+  position:fixed;inset:0 0 auto 0;z-index:var(--z-nav);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;
+  padding:.85rem var(--gutter);
+  background:color-mix(in oklab, var(--bg) 72%, transparent);
+  border-bottom:1px solid transparent;
+  transition:background .4s var(--ease), border-color .4s var(--ease), padding .4s var(--ease);
+}
+.nav.scrolled{
+  background:color-mix(in oklab, var(--bg) 90%, transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom-color:var(--line);
+  padding-block:.6rem;
+}
+.brand{display:flex;align-items:baseline;gap:.5ch;font-family:var(--serif);font-size:1.18rem;font-weight:600;letter-spacing:-0.02em}
+.brand .slash{font-family:var(--mono);color:var(--accent);font-weight:700;font-size:.95em}
+.nav-links{display:flex;align-items:center;gap:clamp(.5rem,2vw,2rem)}
+.nav-links a{font-size:.92rem;color:var(--muted);transition:color .2s var(--ease);position:relative;padding-block:.35rem}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a.active{color:var(--ink)}
+.nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent)}
+.nav-cta{
+  font-family:var(--mono);font-size:.84rem;font-weight:500;
+  color:var(--ink)!important;
+  border:1px solid var(--line);border-radius:999px;
+  padding:.5rem 1.05rem;
+  transition:border-color .25s var(--ease), background .25s var(--ease), color .25s;
+}
+.nav-cta:hover{border-color:var(--accent);background:var(--accent);color:#fff!important}
+.nav-links .hide-sm{display:inline}
+@media (max-width:760px){.nav-links .hide-sm{display:none}}
+
+/* ============================================================ HERO */
+.hero{
+  position:relative;
+  padding-top:clamp(8rem,16vh,11rem);
+  padding-bottom:clamp(4rem,8vw,7rem);
+  overflow:hidden;
+}
+.hero::before{ /* radial glow, single subtle */
+  content:"";position:absolute;z-index:0;
+  width:80vw;height:80vw;max-width:900px;max-height:900px;
+  top:-30%;right:-15%;
+  background:radial-gradient(circle at center, color-mix(in oklab,var(--accent) 26%, transparent), transparent 62%);
+  filter:blur(20px);opacity:.5;pointer-events:none;
+}
+.hero .wrap{position:relative;z-index:1}
+.hero h1{
+  font-size:clamp(2.7rem,1.6rem + 5.6vw,5.4rem);
+  font-weight:600;
+  letter-spacing:-0.04em;
+  line-height:0.98;
+  margin-top:1.6rem;
+  max-width:16ch;
+}
+.hero h1 em{font-style:italic;color:var(--accent-hi);font-weight:500}
+.hero .lead{margin-top:1.7rem;font-size:clamp(1.15rem,1rem + 0.85vw,1.5rem)}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:2.4rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.6ch;
+  font-family:var(--mono);font-size:.92rem;font-weight:500;
+  padding:.85rem 1.5rem;border-radius:999px;
+  transition:transform .3s var(--ease), background .3s var(--ease), border-color .3s var(--ease), color .3s;
+}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+.btn-primary:hover{background:var(--accent-hi);border-color:var(--accent-hi);transform:translateY(-2px)}
+.btn-ghost{border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink-soft);transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.975)}
+.nav-cta:active{transform:scale(.97)}
+.btn .arrow{transition:transform .3s var(--ease)}
+.btn:hover .arrow{transform:translateX(3px)}
+
+/* terminal motif */
+.terminal{
+  margin-top:3.4rem;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:linear-gradient(180deg,var(--surface),var(--bg-2));
+  box-shadow:0 30px 70px -40px rgba(0,0,0,.8);
+  overflow:hidden;
+  max-width:740px;
+}
+.terminal-bar{
+  display:flex;align-items:center;gap:.55rem;
+  padding:.75rem 1.1rem;border-bottom:1px solid var(--line-soft);
+}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--muted-2);opacity:.55}
+.dot:first-child{background:var(--accent);opacity:.9}
+.terminal-bar span{margin-left:.6rem;font-family:var(--mono);font-size:.78rem;color:var(--muted-2)}
+.terminal-body{padding:1.3rem 1.4rem 1.5rem;font-family:var(--mono);font-size:clamp(.82rem,.78rem + .25vw,.95rem);line-height:1.9}
+.terminal-body .prompt{color:var(--accent-hi)}
+.terminal-body .cmd{color:var(--ink)}
+.terminal-body .out{color:var(--muted)}
+.terminal-body .out b{color:var(--ink-soft);font-weight:500}
+.cursor{display:inline-block;width:.6ch;height:1.05em;background:var(--accent);vertical-align:-0.15em;margin-left:.15ch;animation:blink 1.15s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){.cursor{animation:none}}
+
+/* marquee of capabilities */
+.ticker{border-block:1px solid var(--line);overflow:hidden;background:var(--bg-2)}
+.ticker-track{display:flex;gap:0;white-space:nowrap;width:max-content;animation:scroll 38s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@media (prefers-reduced-motion: reduce){.ticker-track{animation:none;flex-wrap:wrap;width:auto;white-space:normal}}
+.ticker-track span{
+  font-family:var(--serif);font-style:italic;font-size:clamp(1.2rem,1rem+1.4vw,2rem);
+  color:var(--muted);padding:1.15rem 1.6rem;display:inline-flex;align-items:center;gap:1.6rem;
+}
+.ticker-track span::after{content:"·";color:var(--accent);font-style:normal}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* ============================================================ THESIS */
+.thesis{background:var(--bg-2);border-block:1px solid var(--line)}
+.thesis .grid{display:grid;grid-template-columns:1fr;gap:clamp(2rem,5vw,4rem);align-items:start}
+@media(min-width:880px){.thesis .grid{grid-template-columns:0.85fr 1.15fr}}
+.thesis h2{font-size:clamp(2rem,1.4rem+2.6vw,3.2rem);letter-spacing:-0.03em;margin-top:1.2rem}
+.thesis blockquote{font-family:var(--serif);font-size:clamp(1.25rem,1.05rem+1vw,1.7rem);line-height:1.4;color:var(--ink-soft);font-weight:400}
+.thesis blockquote b{color:var(--ink);font-weight:600}
+.thesis .accent{color:var(--accent-hi);font-style:italic}
+
+.loop{margin-top:2.4rem;display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.loop-row{display:grid;grid-template-columns:auto 1fr;gap:1.1rem;align-items:baseline;padding:1.05rem 1.3rem;background:var(--surface);position:relative}
+.loop-row .k{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:500;letter-spacing:.05em}
+.loop-row .v{font-size:.98rem}
+.loop-row .v b{font-family:var(--serif);font-weight:600;font-size:1.08rem;display:block;letter-spacing:-0.01em}
+.loop-row .v small{color:var(--muted);font-size:.9rem}
+.loop-row.closed{background:var(--surface-2)}
+.loop-tag{display:inline-block;font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;padding:.3rem .7rem;border-radius:999px;margin-bottom:1rem}
+.loop-tag.open{color:var(--muted-2);border:1px solid var(--line)}
+.loop-tag.closed{color:var(--accent-hi);border:1px solid var(--accent-deep);background:color-mix(in oklab,var(--accent) 12%,transparent)}
+
+/* ============================================================ BRAIN / overlay */
+.brain .head{max-width:64ch;margin-bottom:3rem}
+.brain h2{font-size:clamp(2rem,1.4rem+2.6vw,3.2rem);letter-spacing:-0.03em;margin-top:1.1rem}
+.brain-grid{display:grid;grid-template-columns:1fr;gap:clamp(1.6rem,4vw,3rem);align-items:center}
+@media(min-width:880px){.brain-grid{grid-template-columns:1.05fr 0.95fr}}
+.tree{
+  font-family:var(--mono);font-size:.9rem;line-height:1.95;
+  background:linear-gradient(180deg,var(--surface),var(--bg-2));
+  border:1px solid var(--line);border-radius:14px;
+  padding:1.6rem 1.7rem;
+  box-shadow:0 30px 70px -45px rgba(0,0,0,.8);
+  overflow-x:auto;
+}
+.tree .d{color:var(--accent-hi)}
+.tree .f{color:var(--ink-soft)}
+.tree .c{color:var(--muted-2)}
+.tree .root{color:var(--ink);font-weight:700}
+.principles{display:flex;flex-direction:column;gap:1.4rem}
+.principle{padding-bottom:1.4rem;border-bottom:1px solid var(--line-soft)}
+.principle:last-child{border-bottom:0;padding-bottom:0}
+.principle h3{font-size:1.3rem;font-weight:600;letter-spacing:-0.02em;margin-bottom:.45rem;display:flex;align-items:center;gap:.6ch}
+.principle h3 .mk{font-family:var(--mono);color:var(--accent);font-size:.85em;font-weight:700}
+.principle p{color:var(--muted);font-size:.98rem;max-width:48ch}
+.principle p code{font-family:var(--mono);font-size:.86em;color:var(--ink-soft);background:var(--surface);padding:.1em .4em;border-radius:4px}
+
+/* ============================================================ COMMANDS */
+.commands{background:var(--bg-2);color:var(--ink);border-block:1px solid var(--line)}
+.cmd-head{margin-bottom:1rem}
+.commands h2{font-size:clamp(2.1rem,1.4rem+3vw,3.6rem);letter-spacing:-0.035em;margin-top:1.1rem}
+
+.cat{margin-top:2.6rem}
+.cat-label{
+  font-family:var(--mono);font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent-hi);font-weight:500;
+  display:flex;align-items:center;gap:1rem;margin-bottom:.4rem;
+}
+.cat-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.cat-label .count{color:var(--muted-2);letter-spacing:.1em}
+
+details.cmd{border-bottom:1px solid var(--line)}
+details.cmd[hidden]{display:none}
+.cmd summary{
+  list-style:none;cursor:pointer;
+  display:grid;grid-template-columns:minmax(0,clamp(11rem,26vw,17rem)) 1fr auto;
+  gap:1.2rem;align-items:baseline;
+  padding:1.15rem .2rem;
+  transition:background .2s var(--ease);
+}
+.cmd summary::-webkit-details-marker{display:none}
+.cmd summary:hover{background:rgba(250,250,247,0.04)}
+.cmd .name{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--ink);letter-spacing:-0.01em}
+.cmd .name .pre{color:var(--accent-hi);font-weight:500}
+.cmd .one{color:var(--muted);font-size:.97rem;line-height:1.45}
+.cmd .chev{width:18px;height:18px;stroke:var(--accent-hi);fill:none;stroke-width:2;transition:transform .35s var(--ease);align-self:center}
+.cmd[open] .chev{transform:rotate(90deg)}
+.cmd-detail{padding:.2rem .2rem 1.7rem;display:grid;gap:1.2rem;grid-template-columns:1fr;max-width:80ch}
+@media(min-width:680px){.cmd-detail{grid-template-columns:1fr 1fr;max-width:none}}
+.cmd-detail .full{grid-column:1/-1}
+.cmd-detail dt{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-hi);margin-bottom:.5rem}
+.cmd-detail dd{color:var(--muted);font-size:.95rem;line-height:1.55}
+.cmd-detail dd + dt{margin-top:1.1rem}
+.usage{
+  font-family:var(--mono);font-size:.86rem;color:var(--ink-soft);
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:.7rem .9rem;display:block;white-space:pre-wrap;line-height:1.7;
+}
+.usage .p{color:var(--accent-hi)}
+.usage .c{color:var(--muted-2)}
+.cmd-detail dd code{font-family:var(--mono);font-size:.86em;color:var(--ink-soft);background:var(--surface);padding:.1em .4em;border-radius:4px}
+@media(max-width:560px){
+  .cmd summary{grid-template-columns:1fr auto;gap:.35rem .9rem;padding:1rem .2rem}
+  .cmd .one{grid-column:1/-1;grid-row:2}
+  .cmd .chev{grid-column:2;grid-row:1;align-self:start;margin-top:.2rem}
+  .cmd-detail{grid-template-columns:1fr}
+}
+
+/* ============================================================ FLOWS */
+.flows .head{max-width:60ch;margin-bottom:3rem}
+.flows h2{font-size:clamp(2rem,1.4rem+2.6vw,3.2rem);letter-spacing:-0.03em;margin-top:1.1rem}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.step{background:var(--surface);padding:1.5rem 1.4rem;display:flex;flex-direction:column;gap:.5rem;transition:background .25s var(--ease)}
+.step:hover{background:var(--surface-2)}
+.step .n{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:700;letter-spacing:.1em}
+.step h4{font-size:1.12rem;font-weight:600;letter-spacing:-0.01em;line-height:1.2}
+.step p{color:var(--muted);font-size:.9rem;line-height:1.5}
+.flow-note{margin-top:1.3rem;font-size:.92rem;color:var(--muted);font-family:var(--mono)}
+.flow-note code{color:var(--accent-hi)}
+
+.pipelines{display:grid;grid-template-columns:1fr;gap:1.4rem;margin-top:3.5rem}
+@media(min-width:760px){.pipelines{grid-template-columns:1fr 1fr}}
+.pipe{border:1px solid var(--line);border-radius:14px;padding:1.6rem 1.6rem 1.7rem;background:var(--bg-2)}
+.pipe h4{font-family:var(--mono);font-size:.92rem;font-weight:700;letter-spacing:.02em;color:var(--ink);margin-bottom:1.1rem}
+.pipe h4 .pre{color:var(--accent-hi);font-weight:500}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem;font-size:.9rem}
+.chain .node{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:.4rem .7rem;color:var(--ink-soft)}
+.chain .sep{color:var(--accent);font-family:var(--mono)}
+
+/* ============================================================ INSTALL */
+.install{background:var(--bg-2);border-top:1px solid var(--line)}
+.install-grid{display:grid;grid-template-columns:1fr;gap:clamp(2.5rem,6vw,4.5rem)}
+@media(min-width:900px){.install-grid{grid-template-columns:1.1fr 0.9fr}}
+.install h2{font-size:clamp(2rem,1.4rem+2.6vw,3.2rem);letter-spacing:-0.03em;margin-top:1.1rem}
+.steps-list{counter-reset:s;margin-top:2.2rem;display:flex;flex-direction:column;gap:1.6rem}
+.steps-list li{list-style:none;display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:start}
+.steps-list li::before{
+  counter-increment:s;content:counter(s);
+  font-family:var(--mono);font-size:.85rem;font-weight:700;color:var(--accent-hi);
+  width:2rem;height:2rem;border:1px solid var(--accent-deep);border-radius:50%;
+  display:grid;place-items:center;flex:none;
+}
+.steps-list .t{font-size:1rem;color:var(--ink-soft)}
+.steps-list .t b{color:var(--ink);font-weight:600}
+.code-block{
+  margin-top:.7rem;font-family:var(--mono);font-size:.84rem;line-height:1.8;
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:.85rem 1rem;overflow-x:auto;color:var(--ink-soft);
+}
+.code-block .p{color:var(--accent-hi);user-select:none}
+.code-block .c{color:var(--muted-2)}
+
+.prereq{align-self:start;border:1px solid var(--line);border-radius:14px;padding:1.7rem;background:var(--surface)}
+.prereq h3{font-family:var(--mono);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-hi);font-weight:500;margin-bottom:1.3rem}
+.prereq ul{list-style:none;display:flex;flex-direction:column;gap:.95rem}
+.prereq li{font-size:.94rem;color:var(--muted);padding-left:1.4rem;position:relative;line-height:1.45}
+.prereq li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.prereq li b{color:var(--ink-soft);font-weight:600}
+.prereq li code{font-family:var(--mono);font-size:.85em;color:var(--accent-hi)}
+
+.keys-mini{margin-top:1.7rem;padding-top:1.5rem;border-top:1px solid var(--line)}
+.keys-mini h4{font-family:var(--mono);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-hi);font-weight:500;margin-bottom:1rem}
+.keys-mini dl{display:flex;flex-direction:column;gap:.85rem}
+.keys-mini dt{font-family:var(--mono);font-size:.74rem;color:var(--ink-soft);line-height:1.7;word-break:break-word}
+.keys-mini dt code{color:var(--accent-hi)}
+.keys-mini dd{font-size:.88rem;color:var(--muted);margin-top:.15rem}
+.keys-note{margin-top:1.2rem;font-size:.82rem;color:var(--muted-2);font-family:var(--mono)}
+.keys-note code{color:var(--accent-hi)}
+
+/* ============================================================ FOOTER */
+.footer{border-top:1px solid var(--line);padding-block:clamp(3rem,6vw,5rem)}
+.footer-grid{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2.5rem;align-items:flex-start}
+.footer .brand{font-size:1.5rem}
+.footer-tag{color:var(--muted);max-width:40ch;margin-top:.9rem;font-size:.96rem}
+.footer-links{display:flex;gap:3rem;flex-wrap:wrap}
+.footer-col h4{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2);font-weight:500;margin-bottom:1rem}
+.footer-col a{display:block;color:var(--muted);font-size:.94rem;padding-block:.32rem;transition:color .2s var(--ease)}
+.footer-col a:hover{color:var(--accent-hi)}
+.footer-bottom{margin-top:3rem;padding-top:1.6rem;border-top:1px solid var(--line-soft);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;color:var(--muted-2);font-size:.85rem;font-family:var(--mono)}
+.footer-bottom a{color:var(--muted)}
+.footer-bottom a:hover{color:var(--accent-hi)}
+
+/* ============================================================ REVEAL */
+.js .reveal{opacity:1}
+@media (prefers-reduced-motion: no-preference){
+  .js .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease), transform .8s var(--ease)}
+  .js .reveal.in{opacity:1;transform:none}
+  .js .reveal[data-d="1"]{transition-delay:.08s}
+  .js .reveal[data-d="2"]{transition-delay:.16s}
+  .js .reveal[data-d="3"]{transition-delay:.24s}
+  .js .reveal[data-d="4"]{transition-delay:.32s}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================================================== NAV -->
+<nav class="nav" id="nav">
+  <a href="#top" class="brand" aria-label="BusinessOS — início"><span class="slash">/</span>BusinessOS</a>
+  <div class="nav-links">
+    <a href="#tese" class="hide-sm">A tese</a>
+    <a href="#cerebro" class="hide-sm">Como pensa</a>
+    <a href="#instalar" class="nav-cta">Instalar</a>
+    <a href="#comandos">Comandos</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="eyebrow reveal">Plugin do Claude Code</span>
+    <h1 class="reveal" data-d="1">O sistema operacional do seu <em>negócio</em>, dentro do Claude Code.</h1>
+    <p class="lead reveal" data-d="2">Memória própria, identidade visual aplicada em tudo e 12 comandos de marketing, SEO, ads e operação. Instalável por cima de qualquer projeto — sem virar a raiz, sem sequestrar nada.</p>
+    <div class="hero-actions reveal" data-d="3">
+      <a href="#instalar" class="btn btn-primary">Instalar <span class="arrow">→</span></a>
+      <a href="#comandos" class="btn btn-ghost">Ver os comandos</a>
+    </div>
+
+    <div class="terminal reveal" data-d="4" aria-hidden="true">
+      <div class="terminal-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>claude code — seu-projeto</span></div>
+      <div class="terminal-body">
+<span class="prompt">›</span> <span class="cmd">/businessos init</span>
+<span class="out">  entrevista · memória · identidade → <b>.businessos/</b> criado</span>
+<span class="prompt">›</span> <span class="cmd">/businessos carrossel 5 dicas pra conservar pão</span>
+<span class="out">  texto → aprovar → <b>slide-01.png … slide-05.png</b> + legenda</span>
+<span class="prompt">›</span> <span class="cmd cursor-line">/businessos seo</span><span class="cursor"></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track" id="ticker">
+    <span>carrossel</span><span>publicar-tema</span><span>SEO + GEO</span><span>Google Ads</span><span>relatório de ads</span><span>responder avaliações</span><span>email profissional</span><span>analisar dados</span><span>mapear rotinas</span>
+  </div>
+</div>
+
+<!-- ===================================================== TESE -->
+<section class="section thesis" id="tese">
+  <div class="wrap grid">
+    <div class="reveal">
+      <span class="eyebrow">A tese</span>
+      <h2>IA não é uma ferramenta que sua empresa usa. É o SO em que ela roda.</h2>
+    </div>
+    <div class="reveal" data-d="1">
+      <blockquote>Cada processo crítico que hoje roda em <b>open loop</b> <span class="accent">— decide, executa, não mede, repete cego —</span> vira <b>closed loop</b> dentro do BusinessOS. O sistema não substitui você. Vira parte da sua empresa.</blockquote>
+
+      <div class="loop">
+        <div class="loop-row">
+          <span class="k">open</span>
+          <span class="v"><b>decide → executa → repete cego</b><small>sem captura, sem medição, sem aprendizado</small></span>
+        </div>
+        <div class="loop-row closed">
+          <span class="k">closed</span>
+          <span class="v"><b>decide → executa → captura → realimenta → ajusta</b><small>o sistema aprende com cada correção sua</small></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== CÉREBRO / OVERLAY -->
+<section class="section brain" id="cerebro">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Como o BusinessOS pensa</span>
+      <h2>O cérebro vive ao lado do seu projeto — nunca por cima dele.</h2>
+      <p class="lead">O Claude lê o cérebro a cada comando. Quanto melhor a memória, melhor o sistema. Toda peça respeita a identidade. O resultado fica versionado com o seu projeto — é seu.</p>
+    </div>
+
+    <div class="brain-grid">
+      <pre class="tree reveal" aria-label="estrutura da pasta .businessos">
+<span class="root">.businessos/</span>              <span class="c">← o cérebro, na pasta do seu projeto</span>
+├── <span class="d">memoria/</span>             <span class="c">empresa · preferências · estratégia</span>
+├── <span class="d">identidade/</span>          <span class="c">cores · fontes · logo</span>
+├── <span class="f">config.json</span>          <span class="c">caminhos do site, provider de imagem</span>
+├── <span class="f">.env</span>                 <span class="c">chaves de API (nunca vai pro git)</span>
+└── <span class="d">saidas/</span>              <span class="c">tudo que o sistema produz</span>
+    ├── <span class="d">marketing/conteudo/</span>   <span class="c">carrosséis e posts</span>
+    ├── <span class="d">marketing/seo/</span>        <span class="c">os 8 arquivos do SEO</span>
+    ├── <span class="d">marketing/campanhas/</span>  <span class="c">Google Ads + relatórios</span>
+    └── <span class="d">analises/</span>            <span class="c">análises de dados</span>
+      </pre>
+
+      <div class="principles reveal" data-d="1">
+        <div class="principle">
+          <h3><span class="mk">→</span> Overlay, nunca raiz</h3>
+          <p>O cérebro fica em <code>.businessos/</code> na pasta onde você trabalha — seja um site Astro que já roda, seja uma pasta nova. Não mexe nos seus arquivos nem no seu <code>CLAUDE.md</code>.</p>
+        </div>
+        <div class="principle">
+          <h3><span class="mk">→</span> Aprende com correções</h3>
+          <p>Corrigiu algo ou deu uma instrução permanente? O sistema pergunta se quer salvar e roteia pra memória, preferências, estratégia ou identidade. Não repete o erro.</p>
+        </div>
+        <div class="principle">
+          <h3><span class="mk">→</span> O motor atualiza sozinho</h3>
+          <p>Skills, scripts e referências vivem no plugin e atualizam com <code>/plugin</code>. Você recebe melhorias sem refazer nada — o seu cérebro de negócio fica intacto.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== INSTALL -->
+<section class="section install" id="instalar">
+  <div class="wrap install-grid">
+    <div class="reveal">
+      <span class="eyebrow">Começar — 3 passos</span>
+      <h2>Instalar e configurar</h2>
+      <p class="lead">Distribuído como plugin via marketplace. Instala uma vez, fica disponível em qualquer projeto. Antes de mergulhar nos comandos abaixo, é só isto:</p>
+
+      <ol class="steps-list">
+        <li>
+          <div class="t"><b>Adicione o marketplace e instale o plugin.</b>
+            <pre class="code-block"><span class="p">›</span> /plugin marketplace add rafaelcesardev/BusinessOS
+<span class="p">›</span> /plugin install businessos@businessos-marketplace</pre>
+          </div>
+        </li>
+        <li>
+          <div class="t"><b>Entre na pasta do seu negócio e configure o contexto.</b> Funciona na pasta atual, sempre — não mexe no seu projeto.
+            <pre class="code-block"><span class="p">›</span> /businessos init</pre>
+          </div>
+        </li>
+        <li>
+          <div class="t"><b>Chame os comandos.</b> Sem argumento, ele sugere os de maior valor pro seu momento.
+            <pre class="code-block"><span class="p">›</span> /businessos carrossel 5 dicas pra conservar pão
+<span class="p">›</span> /businessos seo
+<span class="p">›</span> /businessos relatorio-ads</pre>
+          </div>
+        </li>
+        <li>
+          <div class="t"><b>Opcional:</b> crie atalhos diretos pros comandos que mais usa.
+            <pre class="code-block"><span class="c"># agora /carrossel funciona direto</span>
+<span class="p">$</span> bun "$CLAUDE_PLUGIN_ROOT/skills/businessos/scripts/pin.mjs" pin carrossel</pre>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <aside class="prereq reveal" data-d="1">
+      <h3>Pré-requisitos</h3>
+      <ul>
+        <li><b>Claude Code</b> com suporte a plugins.</li>
+        <li><b>bun</b> — os scripts rodam com bun.</li>
+        <li><b>Playwright</b> — só pra renderizar carrosséis em PNG. Instale uma vez: <code>bun add -d playwright &amp;&amp; bunx playwright install chromium</code></li>
+        <li><b>Chaves de API</b> — opcionais, conforme o comando. Preencha o <code>.env</code> a partir do modelo em <code>assets/env.example</code>.</li>
+      </ul>
+
+      <div class="keys-mini">
+        <h4>Chaves de API</h4>
+        <dl>
+          <dt><code>OPENAI_API_KEY</code> · <code>GEMINI_API_KEY</code></dt><dd>carrossel — foto IA</dd>
+          <dt><code>META_PAGE_ACCESS_TOKEN</code> · <code>META_PAGE_ID</code> · <code>META_IG_USER_ID</code></dt><dd>aprovar-post</dd>
+          <dt><code>SITE_URL</code></dt><dd>aprovar-post · publicar-tema</dd>
+        </dl>
+        <p class="keys-note">O <code>.businessos/.env</code> nunca vai pro git.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ===================================================== COMANDOS -->
+<section class="section commands" id="comandos">
+  <div class="wrap">
+    <div class="cmd-head reveal">
+      <span class="eyebrow">A documentação</span>
+      <h2>Os 12 comandos</h2>
+      <p class="lead">Todos invocados pelo prefixo <strong>/businessos</strong> (ou por um atalho direto, se você criar). Clique pra abrir o fluxo completo.</p>
+    </div>
+
+    <div id="cmdList">
+    <!-- NÚCLEO -->
+    <div class="cat" data-cat="Núcleo">
+      <div class="cat-label reveal">Núcleo <span class="count">— configurar &amp; manter</span></div>
+
+      <details class="cmd" data-name="init configurar negócio entrevista memória">
+        <summary><span class="name"><span class="pre">/businessos</span> init</span><span class="one">Cria o <code style="font-family:var(--mono)">.businessos/</code> na pasta atual: entrevista, memória e identidade.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Primeiro comando. Entrevista você (perfil + 10 perguntas sobre negócio, voz, foco e identidade) e cria a memória e a identidade visual. Funciona em qualquer pasta — não mexe nos seus arquivos nem no <code>CLAUDE.md</code> do projeto.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> init</code></dd></div>
+          <div><dt>Resultado</dt><dd>Cria <code>memoria/</code>, <code>identidade/</code>, <code>config.json</code> e <code>.env</code>. Leva 5–7 minutos.</dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="atualizar reconciliar memória varredura">
+        <summary><span class="name"><span class="pre">/businessos</span> atualizar</span><span class="one">Reconcilia a memória com a realidade do workspace e propõe as edições.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Varre o projeto e compara com a memória. Acha o que ficou desatualizado (cliente novo, foco que mudou, prazo vencido) e propõe correções, editando só as linhas relevantes e mostrando o diff.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> atualizar</code></dd></div>
+          <div><dt>Quando usar</dt><dd>De tempos em tempos. No dia a dia o sistema já aprende com suas correções — este é a varredura completa.</dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="mapear-rotinas automação skill personalizada">
+        <summary><span class="name"><span class="pre">/businessos</span> mapear-rotinas</span><span class="one">Descobre o que você repete e transforma em uma skill própria — um comando novo.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Mapeia tarefas que você repete toda semana e propõe uma automação. Você aprova e ela vira uma skill em <code>.claude/skills/&lt;nome&gt;/</code>, chamável por <code>/&lt;nome&gt;</code>.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> mapear-rotinas</code></dd></div>
+          <div><dt>Resultado</dt><dd>Skills novas com scripts próprios dentro da pasta, se precisarem.</dd></div>
+        </dl>
+      </details>
+    </div>
+
+    <!-- CONTEÚDO -->
+    <div class="cat" data-cat="Conteúdo">
+      <div class="cat-label reveal">Conteúdo <span class="count">— criar &amp; publicar</span></div>
+
+      <details class="cmd" data-name="carrossel post instagram tiktok linkedin png legenda visual">
+        <summary><span class="name"><span class="pre">/businessos</span> carrossel</span><span class="one">Carrossel ou post visual com a identidade → HTML + PNG 1080×1350 + legenda.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Cria carrossel ou post pro Instagram/TikTok/LinkedIn com a identidade da marca: gera o HTML estilizado, renderiza em PNG 1080×1350 e escreve a legenda — pronto pra postar. Três tipos: texto puro, com foto IA, ou post único.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> carrossel 5 dicas pra conservar pão artesanal</code></dd></div>
+          <div><dt>Fluxo</dt><dd>Escreve o texto → você aprova → gera foto IA se pedido → monta HTML → renderiza PNGs → gera a legenda.</dd></div>
+          <div><dt>Resultado</dt><dd>Pasta em <code>saidas/marketing/conteudo/</code> com <code>carrossel.html</code>, os PNGs e <code>legenda.md</code>.</dd></div>
+          <div><dt>Precisa de</dt><dd>Playwright. Foto IA precisa de <code>OPENAI_API_KEY</code> ou <code>GEMINI_API_KEY</code>.</dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="publicar-tema blog artigo seo carrossel legendas pacote">
+        <summary><span class="name"><span class="pre">/businessos</span> publicar-tema</span><span class="one">De um tema: artigo de blog + carrossel resumo + 3 legendas, tudo amarrado.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>De um tema, entrega o pacote completo: artigo de blog (a peça-mãe) + carrossel resumo + 3 legendas (Instagram, Facebook, LinkedIn). Trabalha um tema pra SEO e redes de uma vez.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> publicar-tema como escolher azeite extra virgem</code></dd></div>
+          <div><dt>Resultado</dt><dd>Artigo <code>draft: true</code> no blog + pasta de carrossel + legendas. <strong>Não publica sozinho</strong> — use <code>aprovar-post</code>.</dd></div>
+          <div><dt>Precisa de</dt><dd>Site detectado em <code>config.json</code>. Se rodou <code>seo</code> antes, usa a estratégia de conteúdo como fonte de temas.</dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="aprovar-post publicar site instagram facebook deploy commit">
+        <summary><span class="name"><span class="pre">/businessos</span> aprovar-post</span><span class="one">Pipeline de publicação real: site + Instagram + Facebook, só com sua confirmação.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Pega um conteúdo pronto e publica: tira o blog do rascunho, copia as imagens, faz commit/push (o site deploya), espera ficar no ar e posta o carrossel no Instagram + Facebook. LinkedIn fica manual (entrega o texto pronto).</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> aprovar-post como-escolher-azeite</code></dd></div>
+          <div><dt>Resultado</dt><dd>Post no ar no site + Instagram + Facebook, após você confirmar.</dd></div>
+          <div><dt>Precisa de</dt><dd><code>.env</code> com tokens da Meta + <code>SITE_URL</code>, e site com deploy automático a partir do <code>main</code>.</dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="seo geo gmb google meu negócio ads on-page demanda concorrência">
+        <summary><span class="name"><span class="pre">/businessos</span> seo</span><span class="one">Fluxo SEO/GEO/Ads em 8 passos — da demanda ao aparecer no ChatGPT.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Monta a presença digital inteira em 8 passos: demanda → concorrência → Google Meu Negócio → on-page → estratégia de conteúdo → Google Ads → monitoramento → GEO (aparecer em ChatGPT/Gemini/Perplexity). Pesquisa real na web, nunca inventa número.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> seo          <span class="c">(8 passos em sequência)</span>
+<span class="p">/businessos</span> seo gmb      <span class="c">(só o Google Meu Negócio)</span>
+<span class="p">/businessos</span> seo geo      <span class="c">(só o passo de IAs)</span></code></dd></div>
+          <div><dt>Resultado</dt><dd>8 arquivos numerados em <code>saidas/marketing/seo/</code>. Alimenta <code>publicar-tema</code> e <code>anuncio-google</code>.</dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="responder-avaliacoes reviews google gmb resposta">
+        <summary><span class="name"><span class="pre">/businessos</span> responder-avaliacoes</span><span class="one">Respostas humanas e variadas pras reviews do Google Meu Negócio.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Escreve respostas curtas, humanas e variadas pras avaliações do Google: cita o nome, agradece sem soar robô, frase concreta. Cole o texto ou print das reviews.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> responder-avaliacoes</code></dd></div>
+          <div><dt>Importante</dt><dd>Reviews de 3★ ou menos → ele <strong>para e alinha com você</strong> antes de responder. Nunca no automático.</dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="email profissional cobrança proposta follow-up tom">
+        <summary><span class="name"><span class="pre">/businessos</span> email</span><span class="one">Rascunha um email profissional calibrando o tom ao destinatário e ao objetivo.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Escreve um email na voz do seu negócio, calibrando o tom. Pra cobrar, propor, responder, agradecer ou fazer follow-up. Em assuntos delicados oferece 2 versões — uma mais direta, uma mais suave.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> email cobrar o cliente Acme da fatura de maio, com jeito</code></dd></div>
+          <div><dt>Resultado</dt><dd>Texto pronto pra copiar (sem salvar por padrão).</dd></div>
+        </dl>
+      </details>
+    </div>
+
+    <!-- ADS E DADOS -->
+    <div class="cat" data-cat="Ads e dados">
+      <div class="cat-label reveal">Ads e dados <span class="count">— investir &amp; medir</span></div>
+
+      <details class="cmd" data-name="anuncio-google campanha csv ads editor palavras-chave rsa">
+        <summary><span class="name"><span class="pre">/businessos</span> anuncio-google</span><span class="one">Estrutura completa de campanha Google Ads em CSVs pro Ads Editor.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Monta a campanha inteira em CSVs prontos pra importar no Google Ads Editor: campanhas, grupos, palavras-chave, negativas, anúncios (RSAs) e extensões. Do briefing direto pro CSV.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> anuncio-google</code></dd></div>
+          <div><dt>Resultado</dt><dd>Pasta em <code>saidas/marketing/campanhas/</code> com os CSVs + <code>configuracoes.md</code> + README de importação. <strong>Tudo começa pausado.</strong></dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="relatorio-ads relatório semanal google meta cpa conversões alertas">
+        <summary><span class="name"><span class="pre">/businessos</span> relatorio-ads</span><span class="one">Exports (Google + Meta) → relatório executivo semanal com alertas.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Lê os exports do Google Ads e/ou Meta Ads e devolve um relatório executivo: gasto, conversões, CPA, top/bottom campanhas, alertas automáticos (queima de orçamento, CTR caindo) e 3–5 recomendações. Compara com a semana anterior.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> relatorio-ads dados/google.csv dados/meta.csv</code></dd></div>
+          <div><dt>Resultado</dt><dd>Relatório em <code>saidas/marketing/campanhas/relatorios/</code>. Pode mandar por email.</dd></div>
+        </dl>
+      </details>
+
+      <details class="cmd" data-name="analisar-dados csv excel pdf json resumo executivo prosa">
+        <summary><span class="name"><span class="pre">/businessos</span> analisar-dados</span><span class="one">CSV, Excel, PDF ou JSON → resumo executivo em prosa, sem abrir o arquivo.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <dl class="cmd-detail">
+          <div class="full"><dt>Pra que serve</dt><dd>Lê um arquivo e devolve um resumo em prosa: o que os dados mostram, o que funciona, o que preocupa, 3 recomendações e uma tabela de números-chave.</dd></div>
+          <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> analisar-dados dados/vendas-trimestre.xlsx</code></dd></div>
+          <div><dt>Resultado</dt><dd>Análise em <code>saidas/analises/</code>. Oferece exportar em HTML pra apresentar.</dd></div>
+        </dl>
+      </details>
+    </div>
+    </div><!-- /cmdList -->
+  </div>
+</section>
+
+<!-- ===================================================== FLOWS -->
+<section class="section flows">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Fluxos em destaque</span>
+      <h2>Onde os comandos se encadeiam</h2>
+      <p class="lead">Alguns comandos são sequências reais. O <strong>seo</strong> estrutura a base; o conteúdo deriva dela; a publicação fecha o loop.</p>
+    </div>
+
+    <div class="reveal" data-d="1">
+      <div class="steps">
+        <div class="step"><span class="n">01</span><h4>Demanda</h4><p>O que o público realmente busca.</p></div>
+        <div class="step"><span class="n">02</span><h4>Concorrência</h4><p>Quem já aparece e como.</p></div>
+        <div class="step"><span class="n">03</span><h4>Google Meu Negócio</h4><p>A ficha local, otimizada.</p></div>
+        <div class="step"><span class="n">04</span><h4>On-page</h4><p>O site falando a língua da busca.</p></div>
+        <div class="step"><span class="n">05</span><h4>Conteúdo</h4><p>A estratégia que vira temas.</p></div>
+        <div class="step"><span class="n">06</span><h4>Google Ads</h4><p>Mídia paga estruturada.</p></div>
+        <div class="step"><span class="n">07</span><h4>Monitoramento</h4><p>O que medir, toda semana.</p></div>
+        <div class="step"><span class="n">08</span><h4>GEO</h4><p>Aparecer no ChatGPT, Gemini, Perplexity.</p></div>
+      </div>
+      <p class="flow-note">8 passos · <code>/businessos seo</code> roda em sequência ou um passo isolado.</p>
+    </div>
+
+    <div class="pipelines">
+      <div class="pipe reveal" data-d="1">
+        <h4><span class="pre">/businessos</span> carrossel</h4>
+        <div class="chain">
+          <span class="node">texto</span><span class="sep">→</span>
+          <span class="node">aprovar</span><span class="sep">→</span>
+          <span class="node">foto IA</span><span class="sep">→</span>
+          <span class="node">HTML</span><span class="sep">→</span>
+          <span class="node">PNGs</span><span class="sep">→</span>
+          <span class="node">legenda</span>
+        </div>
+      </div>
+      <div class="pipe reveal" data-d="2">
+        <h4><span class="pre">/businessos</span> publicar-tema → aprovar-post</h4>
+        <div class="chain">
+          <span class="node">blog draft</span><span class="sep">→</span>
+          <span class="node">carrossel</span><span class="sep">→</span>
+          <span class="node">aprovar</span><span class="sep">→</span>
+          <span class="node">deploy</span><span class="sep">→</span>
+          <span class="node">IG + FB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== FOOTER -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="brand"><span class="slash">/</span>BusinessOS</div>
+        <p class="footer-tag">IA não é uma ferramenta que sua empresa usa. É o sistema operacional em que ela roda.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Documentação</h4>
+          <a href="#tese">A tese</a>
+          <a href="#cerebro">Como pensa</a>
+          <a href="#comandos">Os 12 comandos</a>
+          <a href="#instalar">Instalar</a>
+        </div>
+        <div class="footer-col">
+          <h4>Links</h4>
+          <a href="https://github.com/rafaelcesardev/BusinessOS" target="_blank" rel="noopener">GitHub ↗</a>
+          <a href="https://mazzeoia.com.br" target="_blank" rel="noopener">mazzeoia.com.br ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>BusinessOS · plugin do Claude Code · v1.0.0</span>
+      <span>Quando precisar — <a href="https://mazzeoia.com.br" target="_blank" rel="noopener">mazzeoia.com.br</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* nav scrolled state */
+  var nav = document.getElementById("nav");
+  var onScroll = function(){ nav.classList.toggle("scrolled", window.scrollY > 24); };
+  onScroll();
+  window.addEventListener("scroll", onScroll, {passive:true});
+
+  /* reveal on scroll */
+  var reveals = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+  if (reduce || !("IntersectionObserver" in window)) {
+    reveals.forEach(function(el){ el.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, {rootMargin:"0px 0px -10% 0px", threshold:0.12});
+    reveals.forEach(function(el){ io.observe(el); });
+    /* safety net: never let a section stay hidden for non-scrolling/headless renderers */
+    setTimeout(function(){ reveals.forEach(function(el){ el.classList.add("in"); }); }, 2600);
+  }
+
+  /* active nav link via section observer */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".nav-links a[href^='#']"));
+  var byId = {};
+  links.forEach(function(a){ byId[a.getAttribute("href").slice(1)] = a; });
+  var sections = ["tese","cerebro","comandos","instalar"]
+    .map(function(id){ return document.getElementById(id); })
+    .filter(Boolean);
+  if ("IntersectionObserver" in window) {
+    var sio = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          links.forEach(function(a){ a.classList.remove("active"); });
+          var a = byId[e.target.id];
+          if (a) a.classList.add("active");
+        }
+      });
+    }, {rootMargin:"-45% 0px -50% 0px", threshold:0});
+    sections.forEach(function(s){ sio.observe(s); });
+  }
+
+  /* duplicate ticker for seamless loop */
+  if (!reduce) {
+    var track = document.getElementById("ticker");
+    if (track) track.innerHTML += track.innerHTML;
+  }
+})();
+</script>
+</body>
+</html>
