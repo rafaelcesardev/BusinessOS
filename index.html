@@ -6,6 +6,7 @@
 <title>BusinessOS — o sistema operacional do seu negócio dentro do Claude Code</title>
 <meta name="description" content="BusinessOS é um plugin do Claude Code que dá memória, identidade visual e 12 comandos de marketing, SEO, ads e operação para qualquer projeto. Documentação completa." />
 <meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E1116'/%3E%3Ctext x='16' y='24' font-family='monospace' font-size='24' font-weight='700' fill='%23D2683F' text-anchor='middle'%3E/%3C/text%3E%3C/svg%3E" />
 
 <meta property="og:type" content="website" />
 <meta property="og:title" content="BusinessOS — o SO do seu negócio dentro do Claude Code" />
@@ -27,17 +28,13 @@
   --ink:       #FAFAF7;
   --ink-soft:  #D7D8D2;
   --muted:     #9CA3AE;
-  --muted-2:   #6E7681;
-  --cream:     #F5ECD7;
-  --cream-ink: #1A1A1A;
-  --cream-body:#4A463C;
+  --muted-2:   #828A99;   /* AA: ~4.9:1 sobre as superfícies escuras */
   --accent:    #D2683F;   /* terracota — UMA cor de destaque */
   --accent-hi: #E8825B;
   --accent-deep:#B14E2A;
 
   --line:      rgba(250,250,247,0.11);
   --line-soft: rgba(250,250,247,0.06);
-  --line-cream:rgba(26,26,26,0.14);
 
   --max: 1180px;
   --gutter: clamp(1.25rem, 5vw, 4.5rem);
@@ -82,6 +79,8 @@ a{color:inherit;text-decoration:none}
 /* ============================================================ LAYOUT */
 .wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--gutter)}
 .section{padding-block:clamp(4.5rem,9vw,8rem)}
+.skip-link{position:fixed;left:.75rem;top:.6rem;z-index:calc(var(--z-nav) + 1);transform:translateY(-160%);background:var(--accent);color:#fff;font-family:var(--mono);font-size:.85rem;padding:.6rem 1rem;border-radius:8px;transition:transform .2s var(--ease)}
+.skip-link:focus-visible{transform:translateY(0)}
 .eyebrow{
   font-family:var(--mono);
   font-size:.78rem;font-weight:500;
@@ -103,7 +102,7 @@ p{text-wrap:pretty}
   padding:.85rem var(--gutter);
   background:color-mix(in oklab, var(--bg) 72%, transparent);
   border-bottom:1px solid transparent;
-  transition:background .4s var(--ease), border-color .4s var(--ease), padding .4s var(--ease);
+  transition:background .4s var(--ease), border-color .4s var(--ease);
 }
 .nav.scrolled{
   background:color-mix(in oklab, var(--bg) 90%, transparent);
@@ -118,20 +117,18 @@ p{text-wrap:pretty}
 .nav-links a:hover{color:var(--ink)}
 .nav-links a.active{color:var(--ink)}
 .nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent)}
-.nav-cta{
-  font-family:var(--mono);font-size:.84rem;font-weight:500;
-  color:var(--ink)!important;
-  border:1px solid var(--line);border-radius:999px;
-  padding:.5rem 1.05rem;
-  transition:border-color .25s var(--ease), background .25s var(--ease), color .25s;
-}
-.nav-cta:hover{border-color:var(--accent);background:var(--accent);color:#fff!important}
 .nav-gh{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:999px;border:1px solid var(--line);color:var(--muted)!important;transition:color .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease)}
 .nav-gh svg{fill:currentColor}
 .nav-gh:hover{color:var(--ink)!important;border-color:var(--ink-soft);background:var(--surface)}
 .nav-gh:active{transform:scale(.94)}
 .nav-links .hide-sm{display:inline}
-@media (max-width:760px){.nav-links .hide-sm{display:none}}
+@media (max-width:760px){
+  .nav-links .hide-sm{display:none}
+  .nav-links a{min-height:44px;display:inline-flex;align-items:center}
+  .nav-gh{width:44px;height:44px}
+  .footer-col a{padding-block:.6rem}
+  .footer-bottom a{display:inline-block;padding-block:.4rem}
+}
 
 /* ============================================================ HERO */
 .hero{
@@ -170,7 +167,6 @@ p{text-wrap:pretty}
 .btn-ghost{border:1px solid var(--line);color:var(--ink)}
 .btn-ghost:hover{border-color:var(--ink-soft);transform:translateY(-2px)}
 .btn:active{transform:translateY(0) scale(.975)}
-.nav-cta:active{transform:scale(.97)}
 .btn .arrow{transition:transform .3s var(--ease)}
 .btn:hover .arrow{transform:translateX(3px)}
 
@@ -315,7 +311,7 @@ details.cmd[hidden]{display:none}
 .step{background:var(--surface);padding:1.5rem 1.4rem;display:flex;flex-direction:column;gap:.5rem;transition:background .25s var(--ease)}
 .step:hover{background:var(--surface-2)}
 .step .n{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:700;letter-spacing:.1em}
-.step h4{font-size:1.12rem;font-weight:600;letter-spacing:-0.01em;line-height:1.2}
+.step h3{font-size:1.12rem;font-weight:600;letter-spacing:-0.01em;line-height:1.2}
 .step p{color:var(--muted);font-size:.9rem;line-height:1.5}
 .flow-note{margin-top:1.3rem;font-size:.92rem;color:var(--muted);font-family:var(--mono)}
 .flow-note code{color:var(--accent-hi)}
@@ -323,8 +319,8 @@ details.cmd[hidden]{display:none}
 .pipelines{display:grid;grid-template-columns:1fr;gap:1.4rem;margin-top:3.5rem}
 @media(min-width:760px){.pipelines{grid-template-columns:1fr 1fr}}
 .pipe{border:1px solid var(--line);border-radius:14px;padding:1.6rem 1.6rem 1.7rem;background:var(--bg-2)}
-.pipe h4{font-family:var(--mono);font-size:.92rem;font-weight:700;letter-spacing:.02em;color:var(--ink);margin-bottom:1.1rem}
-.pipe h4 .pre{color:var(--accent-hi);font-weight:500}
+.pipe h3{font-family:var(--mono);font-size:.92rem;font-weight:700;letter-spacing:.02em;color:var(--ink);margin-bottom:1.1rem}
+.pipe h3 .pre{color:var(--accent-hi);font-weight:500}
 .chain{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem;font-size:.9rem}
 .chain .node{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:.4rem .7rem;color:var(--ink-soft)}
 .chain .sep{color:var(--accent);font-family:var(--mono)}
@@ -335,19 +331,19 @@ details.cmd[hidden]{display:none}
 @media(min-width:900px){.install-grid{grid-template-columns:1.1fr 0.9fr}}
 .install h2{font-size:clamp(2rem,1.4rem+2.6vw,3.2rem);letter-spacing:-0.03em;margin-top:1.1rem}
 .steps-list{counter-reset:s;margin-top:2.2rem;display:flex;flex-direction:column;gap:1.6rem}
-.steps-list li{list-style:none;display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:start}
+.steps-list li{list-style:none;display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:start;min-width:0}
 .steps-list li::before{
   counter-increment:s;content:counter(s);
   font-family:var(--mono);font-size:.85rem;font-weight:700;color:var(--accent-hi);
   width:2rem;height:2rem;border:1px solid var(--accent-deep);border-radius:50%;
   display:grid;place-items:center;flex:none;
 }
-.steps-list .t{font-size:1rem;color:var(--ink-soft)}
+.steps-list .t{font-size:1rem;color:var(--ink-soft);min-width:0}
 .steps-list .t b{color:var(--ink);font-weight:600}
 .code-block{
   margin-top:.7rem;font-family:var(--mono);font-size:.84rem;line-height:1.8;
   background:var(--surface);border:1px solid var(--line);border-radius:9px;
-  padding:.85rem 1rem;overflow-x:auto;color:var(--ink-soft);
+  padding:.85rem 1rem;overflow-x:auto;color:var(--ink-soft);min-width:0;
 }
 .code-block .p{color:var(--accent-hi);user-select:none}
 .code-block .c{color:var(--muted-2)}
@@ -395,6 +391,7 @@ details.cmd[hidden]{display:none}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
 <!-- ===================================================== NAV -->
 <nav class="nav" id="nav">
@@ -402,7 +399,7 @@ details.cmd[hidden]{display:none}
   <div class="nav-links">
     <a href="#tese" class="hide-sm">A tese</a>
     <a href="#cerebro" class="hide-sm">Como pensa</a>
-    <a href="#instalar" class="nav-cta">Instalar</a>
+    <a href="#instalar">Instalar</a>
     <a href="#comandos">Comandos</a>
     <a href="https://github.com/rafaelcesardev/BusinessOS" class="nav-gh" target="_blank" rel="noopener" aria-label="Ver no GitHub">
       <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
@@ -410,11 +407,12 @@ details.cmd[hidden]{display:none}
   </div>
 </nav>
 
+<main id="conteudo">
 <header class="hero" id="top">
   <div class="wrap">
     <span class="eyebrow reveal">Plugin do Claude Code</span>
     <h1 class="reveal" data-d="1">O sistema operacional do seu <em>negócio</em>, dentro do Claude Code.</h1>
-    <p class="lead reveal" data-d="2">Memória própria, identidade visual aplicada em tudo e 12 comandos de marketing, SEO, ads e operação. Instalável por cima de qualquer projeto — sem virar a raiz, sem sequestrar nada.</p>
+    <p class="lead reveal" data-d="2">Memória própria, identidade visual aplicada em tudo e 12 comandos de marketing, SEO, ads e operação. Instalável por cima de qualquer projeto, sem virar a raiz, sem sequestrar nada.</p>
     <div class="hero-actions reveal" data-d="3">
       <a href="#instalar" class="btn btn-primary">Instalar <span class="arrow">→</span></a>
       <a href="#comandos" class="btn btn-ghost">Ver os comandos</a>
@@ -443,7 +441,6 @@ details.cmd[hidden]{display:none}
 <section class="section thesis" id="tese">
   <div class="wrap grid">
     <div class="reveal">
-      <span class="eyebrow">A tese</span>
       <h2>IA não é uma ferramenta que sua empresa usa. É o SO em que ela roda.</h2>
     </div>
     <div class="reveal" data-d="1">
@@ -467,9 +464,8 @@ details.cmd[hidden]{display:none}
 <section class="section brain" id="cerebro">
   <div class="wrap">
     <div class="head reveal">
-      <span class="eyebrow">Como o BusinessOS pensa</span>
-      <h2>O cérebro vive ao lado do seu projeto — nunca por cima dele.</h2>
-      <p class="lead">O Claude lê o cérebro a cada comando. Quanto melhor a memória, melhor o sistema. Toda peça respeita a identidade. O resultado fica versionado com o seu projeto — é seu.</p>
+      <h2>O cérebro vive ao lado do seu projeto, nunca por cima dele.</h2>
+      <p class="lead">O Claude lê o cérebro a cada comando. Quanto melhor a memória, melhor o sistema. Toda peça respeita a identidade. O resultado fica versionado com o seu projeto. É seu.</p>
     </div>
 
     <div class="brain-grid">
@@ -489,7 +485,7 @@ details.cmd[hidden]{display:none}
       <div class="principles reveal" data-d="1">
         <div class="principle">
           <h3><span class="mk">→</span> Overlay, nunca raiz</h3>
-          <p>O cérebro fica em <code>.businessos/</code> na pasta onde você trabalha — seja um site Astro que já roda, seja uma pasta nova. Não mexe nos seus arquivos nem no seu <code>CLAUDE.md</code>.</p>
+          <p>O cérebro fica em <code>.businessos/</code> na pasta onde você trabalha: seja um site Astro que já roda, seja uma pasta nova. Não mexe nos seus arquivos nem no seu <code>CLAUDE.md</code>.</p>
         </div>
         <div class="principle">
           <h3><span class="mk">→</span> Aprende com correções</h3>
@@ -497,7 +493,7 @@ details.cmd[hidden]{display:none}
         </div>
         <div class="principle">
           <h3><span class="mk">→</span> O motor atualiza sozinho</h3>
-          <p>Skills, scripts e referências vivem no plugin e atualizam com <code>/plugin</code>. Você recebe melhorias sem refazer nada — o seu cérebro de negócio fica intacto.</p>
+          <p>Skills, scripts e referências vivem no plugin e atualizam com <code>/plugin</code>. Você recebe melhorias sem refazer nada. O seu cérebro de negócio fica intacto.</p>
         </div>
       </div>
     </div>
@@ -508,9 +504,8 @@ details.cmd[hidden]{display:none}
 <section class="section install" id="instalar">
   <div class="wrap install-grid">
     <div class="reveal">
-      <span class="eyebrow">Começar — 3 passos</span>
       <h2>Instalar e configurar</h2>
-      <p class="lead">Distribuído como plugin via marketplace. Instala uma vez, fica disponível em qualquer projeto. Antes de mergulhar nos comandos abaixo, é só isto:</p>
+      <p class="lead">Quatro passos, uma vez só. Você cola cada comando no Claude Code e ele faz o resto; não precisa ser técnico pra seguir. Depois disso, é só chamar os comandos.</p>
 
       <ol class="steps-list">
         <li>
@@ -520,7 +515,7 @@ details.cmd[hidden]{display:none}
           </div>
         </li>
         <li>
-          <div class="t"><b>Entre na pasta do seu negócio e configure o contexto.</b> Funciona na pasta atual, sempre — não mexe no seu projeto.
+          <div class="t"><b>Entre na pasta do seu negócio e configure o contexto.</b> Funciona na pasta atual, sempre, e não mexe no seu projeto.
             <pre class="code-block"><span class="p">›</span> /businessos init</pre>
           </div>
         </li>
@@ -543,16 +538,16 @@ details.cmd[hidden]{display:none}
     <aside class="prereq reveal" data-d="1">
       <h3>Pré-requisitos</h3>
       <ul>
-        <li><b>Claude Code</b> com suporte a plugins.</li>
-        <li><b>bun</b> — os scripts rodam com bun.</li>
-        <li><b>Playwright</b> — só pra renderizar carrosséis em PNG. Instale uma vez: <code>bun add -d playwright &amp;&amp; bunx playwright install chromium</code></li>
-        <li><b>Chaves de API</b> — opcionais, conforme o comando. Preencha o <code>.env</code> a partir do modelo em <code>assets/env.example</code>.</li>
+        <li><b>Claude Code</b> com suporte a plugins. Se você já usa o Claude Code, está pronto.</li>
+        <li><b>bun</b>: o motorzinho que roda os scripts. Instala uma vez e esquece.</li>
+        <li><b>Playwright</b>: só entra em cena pra transformar carrossel em imagem PNG. Instale uma vez com <code>bun add -d playwright &amp;&amp; bunx playwright install chromium</code>.</li>
+        <li><b>Chaves de API</b>: opcionais, conforme o comando. É só colar no <code>.env</code> a partir do modelo em <code>assets/env.example</code>.</li>
       </ul>
 
       <div class="keys-mini">
         <h4>Chaves de API</h4>
         <dl>
-          <dt><code>OPENAI_API_KEY</code> · <code>GEMINI_API_KEY</code></dt><dd>carrossel — foto IA</dd>
+          <dt><code>OPENAI_API_KEY</code> · <code>GEMINI_API_KEY</code></dt><dd>carrossel: foto IA</dd>
           <dt><code>META_PAGE_ACCESS_TOKEN</code> · <code>META_PAGE_ID</code> · <code>META_IG_USER_ID</code></dt><dd>aprovar-post</dd>
           <dt><code>SITE_URL</code></dt><dd>aprovar-post · publicar-tema</dd>
         </dl>
@@ -574,12 +569,12 @@ details.cmd[hidden]{display:none}
     <div id="cmdList">
     <!-- NÚCLEO -->
     <div class="cat" data-cat="Núcleo">
-      <div class="cat-label reveal">Núcleo <span class="count">— configurar &amp; manter</span></div>
+      <div class="cat-label reveal">Núcleo <span class="count">· configurar &amp; manter</span></div>
 
       <details class="cmd" data-name="init configurar negócio entrevista memória">
         <summary><span class="name"><span class="pre">/businessos</span> init</span><span class="one">Cria o <code style="font-family:var(--mono)">.businessos/</code> na pasta atual: entrevista, memória e identidade.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
         <dl class="cmd-detail">
-          <div class="full"><dt>Pra que serve</dt><dd>Primeiro comando. Entrevista você (perfil + 10 perguntas sobre negócio, voz, foco e identidade) e cria a memória e a identidade visual. Funciona em qualquer pasta — não mexe nos seus arquivos nem no <code>CLAUDE.md</code> do projeto.</dd></div>
+          <div class="full"><dt>Pra que serve</dt><dd>Primeiro comando. Entrevista você (perfil + 10 perguntas sobre negócio, voz, foco e identidade) e cria a memória e a identidade visual. Funciona em qualquer pasta e não mexe nos seus arquivos nem no <code>CLAUDE.md</code> do projeto.</dd></div>
           <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> init</code></dd></div>
           <div><dt>Resultado</dt><dd>Cria <code>memoria/</code>, <code>identidade/</code>, <code>config.json</code> e <code>.env</code>. Leva 5–7 minutos.</dd></div>
         </dl>
@@ -590,12 +585,12 @@ details.cmd[hidden]{display:none}
         <dl class="cmd-detail">
           <div class="full"><dt>Pra que serve</dt><dd>Varre o projeto e compara com a memória. Acha o que ficou desatualizado (cliente novo, foco que mudou, prazo vencido) e propõe correções, editando só as linhas relevantes e mostrando o diff.</dd></div>
           <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> atualizar</code></dd></div>
-          <div><dt>Quando usar</dt><dd>De tempos em tempos. No dia a dia o sistema já aprende com suas correções — este é a varredura completa.</dd></div>
+          <div><dt>Quando usar</dt><dd>De tempos em tempos. No dia a dia o sistema já aprende com suas correções; esta é a varredura completa.</dd></div>
         </dl>
       </details>
 
       <details class="cmd" data-name="mapear-rotinas automação skill personalizada">
-        <summary><span class="name"><span class="pre">/businessos</span> mapear-rotinas</span><span class="one">Descobre o que você repete e transforma em uma skill própria — um comando novo.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <summary><span class="name"><span class="pre">/businessos</span> mapear-rotinas</span><span class="one">Descobre o que você repete e transforma em uma skill própria: um comando novo.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
         <dl class="cmd-detail">
           <div class="full"><dt>Pra que serve</dt><dd>Mapeia tarefas que você repete toda semana e propõe uma automação. Você aprova e ela vira uma skill em <code>.claude/skills/&lt;nome&gt;/</code>, chamável por <code>/&lt;nome&gt;</code>.</dd></div>
           <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> mapear-rotinas</code></dd></div>
@@ -606,12 +601,12 @@ details.cmd[hidden]{display:none}
 
     <!-- CONTEÚDO -->
     <div class="cat" data-cat="Conteúdo">
-      <div class="cat-label reveal">Conteúdo <span class="count">— criar &amp; publicar</span></div>
+      <div class="cat-label reveal">Conteúdo <span class="count">· criar &amp; publicar</span></div>
 
       <details class="cmd" data-name="carrossel post instagram tiktok linkedin png legenda visual">
         <summary><span class="name"><span class="pre">/businessos</span> carrossel</span><span class="one">Carrossel ou post visual com a identidade → HTML + PNG 1080×1350 + legenda.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
         <dl class="cmd-detail">
-          <div class="full"><dt>Pra que serve</dt><dd>Cria carrossel ou post pro Instagram/TikTok/LinkedIn com a identidade da marca: gera o HTML estilizado, renderiza em PNG 1080×1350 e escreve a legenda — pronto pra postar. Três tipos: texto puro, com foto IA, ou post único.</dd></div>
+          <div class="full"><dt>Pra que serve</dt><dd>Cria carrossel ou post pro Instagram/TikTok/LinkedIn com a identidade da marca: gera o HTML estilizado, renderiza em PNG 1080×1350 e escreve a legenda, pronto pra postar. Três tipos: texto puro, com foto IA, ou post único.</dd></div>
           <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> carrossel 5 dicas pra conservar pão artesanal</code></dd></div>
           <div><dt>Fluxo</dt><dd>Escreve o texto → você aprova → gera foto IA se pedido → monta HTML → renderiza PNGs → gera a legenda.</dd></div>
           <div><dt>Resultado</dt><dd>Pasta em <code>saidas/marketing/conteudo/</code> com <code>carrossel.html</code>, os PNGs e <code>legenda.md</code>.</dd></div>
@@ -624,7 +619,7 @@ details.cmd[hidden]{display:none}
         <dl class="cmd-detail">
           <div class="full"><dt>Pra que serve</dt><dd>De um tema, entrega o pacote completo: artigo de blog (a peça-mãe) + carrossel resumo + 3 legendas (Instagram, Facebook, LinkedIn). Trabalha um tema pra SEO e redes de uma vez.</dd></div>
           <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> publicar-tema como escolher azeite extra virgem</code></dd></div>
-          <div><dt>Resultado</dt><dd>Artigo <code>draft: true</code> no blog + pasta de carrossel + legendas. <strong>Não publica sozinho</strong> — use <code>aprovar-post</code>.</dd></div>
+          <div><dt>Resultado</dt><dd>Artigo <code>draft: true</code> no blog + pasta de carrossel + legendas. <strong>Não publica sozinho</strong>; use <code>aprovar-post</code>.</dd></div>
           <div><dt>Precisa de</dt><dd>Site detectado em <code>config.json</code>. Se rodou <code>seo</code> antes, usa a estratégia de conteúdo como fonte de temas.</dd></div>
         </dl>
       </details>
@@ -640,7 +635,7 @@ details.cmd[hidden]{display:none}
       </details>
 
       <details class="cmd" data-name="seo geo gmb google meu negócio ads on-page demanda concorrência">
-        <summary><span class="name"><span class="pre">/businessos</span> seo</span><span class="one">Fluxo SEO/GEO/Ads em 8 passos — da demanda ao aparecer no ChatGPT.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
+        <summary><span class="name"><span class="pre">/businessos</span> seo</span><span class="one">Fluxo SEO/GEO/Ads em 8 passos, da demanda ao aparecer no ChatGPT.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
         <dl class="cmd-detail">
           <div class="full"><dt>Pra que serve</dt><dd>Monta a presença digital inteira em 8 passos: demanda → concorrência → Google Meu Negócio → on-page → estratégia de conteúdo → Google Ads → monitoramento → GEO (aparecer em ChatGPT/Gemini/Perplexity). Pesquisa real na web, nunca inventa número.</dd></div>
           <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> seo          <span class="c">(8 passos em sequência)</span>
@@ -662,7 +657,7 @@ details.cmd[hidden]{display:none}
       <details class="cmd" data-name="email profissional cobrança proposta follow-up tom">
         <summary><span class="name"><span class="pre">/businessos</span> email</span><span class="one">Rascunha um email profissional calibrando o tom ao destinatário e ao objetivo.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
         <dl class="cmd-detail">
-          <div class="full"><dt>Pra que serve</dt><dd>Escreve um email na voz do seu negócio, calibrando o tom. Pra cobrar, propor, responder, agradecer ou fazer follow-up. Em assuntos delicados oferece 2 versões — uma mais direta, uma mais suave.</dd></div>
+          <div class="full"><dt>Pra que serve</dt><dd>Escreve um email na voz do seu negócio, calibrando o tom. Pra cobrar, propor, responder, agradecer ou fazer follow-up. Em assuntos delicados oferece 2 versões: uma mais direta, uma mais suave.</dd></div>
           <div><dt>Como usar</dt><dd><code class="usage"><span class="p">/businessos</span> email cobrar o cliente Acme da fatura de maio, com jeito</code></dd></div>
           <div><dt>Resultado</dt><dd>Texto pronto pra copiar (sem salvar por padrão).</dd></div>
         </dl>
@@ -671,7 +666,7 @@ details.cmd[hidden]{display:none}
 
     <!-- ADS E DADOS -->
     <div class="cat" data-cat="Ads e dados">
-      <div class="cat-label reveal">Ads e dados <span class="count">— investir &amp; medir</span></div>
+      <div class="cat-label reveal">Ads e dados <span class="count">· investir &amp; medir</span></div>
 
       <details class="cmd" data-name="anuncio-google campanha csv ads editor palavras-chave rsa">
         <summary><span class="name"><span class="pre">/businessos</span> anuncio-google</span><span class="one">Estrutura completa de campanha Google Ads em CSVs pro Ads Editor.</span><svg class="chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></summary>
@@ -708,28 +703,27 @@ details.cmd[hidden]{display:none}
 <section class="section flows">
   <div class="wrap">
     <div class="head reveal">
-      <span class="eyebrow">Fluxos em destaque</span>
       <h2>Onde os comandos se encadeiam</h2>
       <p class="lead">Alguns comandos são sequências reais. O <strong>seo</strong> estrutura a base; o conteúdo deriva dela; a publicação fecha o loop.</p>
     </div>
 
     <div class="reveal" data-d="1">
       <div class="steps">
-        <div class="step"><span class="n">01</span><h4>Demanda</h4><p>O que o público realmente busca.</p></div>
-        <div class="step"><span class="n">02</span><h4>Concorrência</h4><p>Quem já aparece e como.</p></div>
-        <div class="step"><span class="n">03</span><h4>Google Meu Negócio</h4><p>A ficha local, otimizada.</p></div>
-        <div class="step"><span class="n">04</span><h4>On-page</h4><p>O site falando a língua da busca.</p></div>
-        <div class="step"><span class="n">05</span><h4>Conteúdo</h4><p>A estratégia que vira temas.</p></div>
-        <div class="step"><span class="n">06</span><h4>Google Ads</h4><p>Mídia paga estruturada.</p></div>
-        <div class="step"><span class="n">07</span><h4>Monitoramento</h4><p>O que medir, toda semana.</p></div>
-        <div class="step"><span class="n">08</span><h4>GEO</h4><p>Aparecer no ChatGPT, Gemini, Perplexity.</p></div>
+        <div class="step"><span class="n">01</span><h3>Demanda</h3><p>O que o público realmente busca.</p></div>
+        <div class="step"><span class="n">02</span><h3>Concorrência</h3><p>Quem já aparece e como.</p></div>
+        <div class="step"><span class="n">03</span><h3>Google Meu Negócio</h3><p>A ficha local, otimizada.</p></div>
+        <div class="step"><span class="n">04</span><h3>On-page</h3><p>O site falando a língua da busca.</p></div>
+        <div class="step"><span class="n">05</span><h3>Conteúdo</h3><p>A estratégia que vira temas.</p></div>
+        <div class="step"><span class="n">06</span><h3>Google Ads</h3><p>Mídia paga estruturada.</p></div>
+        <div class="step"><span class="n">07</span><h3>Monitoramento</h3><p>O que medir, toda semana.</p></div>
+        <div class="step"><span class="n">08</span><h3>GEO</h3><p>Aparecer no ChatGPT, Gemini, Perplexity.</p></div>
       </div>
       <p class="flow-note">8 passos · <code>/businessos seo</code> roda em sequência ou um passo isolado.</p>
     </div>
 
     <div class="pipelines">
       <div class="pipe reveal" data-d="1">
-        <h4><span class="pre">/businessos</span> carrossel</h4>
+        <h3><span class="pre">/businessos</span> carrossel</h3>
         <div class="chain">
           <span class="node">texto</span><span class="sep">→</span>
           <span class="node">aprovar</span><span class="sep">→</span>
@@ -740,7 +734,7 @@ details.cmd[hidden]{display:none}
         </div>
       </div>
       <div class="pipe reveal" data-d="2">
-        <h4><span class="pre">/businessos</span> publicar-tema → aprovar-post</h4>
+        <h3><span class="pre">/businessos</span> publicar-tema → aprovar-post</h3>
         <div class="chain">
           <span class="node">blog draft</span><span class="sep">→</span>
           <span class="node">carrossel</span><span class="sep">→</span>
@@ -752,6 +746,7 @@ details.cmd[hidden]{display:none}
     </div>
   </div>
 </section>
+</main>
 
 <!-- ===================================================== FOOTER -->
 <footer class="footer">
@@ -813,7 +808,7 @@ details.cmd[hidden]{display:none}
   var links = Array.prototype.slice.call(document.querySelectorAll(".nav-links a[href^='#']"));
   var byId = {};
   links.forEach(function(a){ byId[a.getAttribute("href").slice(1)] = a; });
-  var sections = ["tese","cerebro","comandos","instalar"]
+  var sections = ["tese","cerebro","instalar","comandos"]
     .map(function(id){ return document.getElementById(id); })
     .filter(Boolean);
   if ("IntersectionObserver" in window) {

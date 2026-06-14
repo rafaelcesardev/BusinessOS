@@ -23,3 +23,9 @@ node_modules/
 # Arquivos temporários
 *.log
 *.tmp
+
+# Impeccable (relatórios e config locais de design)
+.impeccable/
+
+# Playwright MCP (screenshots e artefatos de sessão)
+.playwright-mcp/
