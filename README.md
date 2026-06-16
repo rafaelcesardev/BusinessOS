@@ -74,6 +74,40 @@ bun "${CLAUDE_PLUGIN_ROOT}/skills/businessos/scripts/pin.mjs" pin carrossel
 
 Agora `/carrossel` funciona direto. Remover: troque `pin` por `unpin`.
 
+### Instalar por projeto (em vez de global)
+
+Os passos acima instalam o BusinessOS no **seu usuário** — fica disponível em
+qualquer pasta da sua máquina. Se você prefere prender o plugin a **um projeto
+específico** (e fazer ele viajar com o repositório, pro time inteiro herdar ao
+clonar), commite um `.claude/settings.json` na raiz do projeto host:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "businessos-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "rafaelcesardev/BusinessOS"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "businessos@businessos-marketplace": true
+  }
+}
+```
+
+Quem abrir o projeto recebe um pedido pra confiar no repositório; ao confiar, o
+marketplace é registrado e o plugin é habilitado **automaticamente** — sem rodar
+`/plugin` à mão. O motor continua se atualizando sozinho e o `init` funciona
+igual. A diferença é só o escopo: vale **naquele projeto**, não no usuário inteiro.
+
+> **Global ou por projeto?** Global é melhor pra quem usa o BusinessOS em vários
+> negócios na mesma máquina. Por projeto é melhor quando o plugin é parte da
+> configuração de um repositório só e você quer que o time todo o tenha ativo ao
+> clonar — como um `.gitignore`. Os dois modos usam o mesmo motor; dá pra trocar
+> a qualquer momento.
+
 ---
 
 ## Como o BusinessOS pensa
